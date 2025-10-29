@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detection Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Detection Result (Model: {{ model_used }})</h1>
+
+        {% if result_file.endswith('.mp4') %}
+            <video controls autoplay loop>
+                <source src="{{ result_file }}" type="video/mp4">
+            </video>
+        {% else %}
+            <img src="{{ result_file }}">
+        {% endif %}
+
+        <h3>Detected Classes:</h3>
+        {% if detected_classes %}
+            <ul>
+            {% for c in detected_classes %}
+                <li>{{ c }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No objects detected.</p>
+        {% endif %}
+
+        <br>
+        <a href="/" class="button">⬅ Back</a>
+        <a href="/download/{{ result_file }}" class="button">⬇ Download Result</a>
+    </div>
+</body>
+</html>

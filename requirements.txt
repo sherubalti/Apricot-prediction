@@ -1,0 +1,6 @@
+flask==3.0.3
+ultralytics==8.3.15
+opencv-python-headless==4.9.0.80
+torch>=2.0.0
+numpy
+gunicorn

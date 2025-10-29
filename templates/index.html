@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>YOLOv8 Object Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 YOLOv8 Object Detection</h1>
+        <form action="/predict" method="post" enctype="multipart/form-data" onsubmit="showLoader()">
+            <label for="model_choice">Select Model:</label>
+            <select name="model_choice" id="model_choice">
+                <option value="best">best.pt</option>
+                <option value="last">last.pt</option>
+            </select>
+
+            <input type="file" name="file" accept="image/*,video/*" required>
+
+            <input type="submit" value="Run Detection">
+        </form>
+
+        <div id="loader" class="loader"></div>
+    </div>
+</body>
+</html>
