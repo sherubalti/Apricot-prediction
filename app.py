@@ -6,22 +6,14 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['RESULT_FOLDER'] = 'static/results'
 
+# Ensure folders exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['RESULT_FOLDER'], exist_ok=True)
 
-# Load models once (Replit can be slow, so just load when accessed)
-model_best, model_last = None, None
-
-def load_model(model_name):
-    global model_best, model_last
-    if model_name == 'best':
-        if model_best is None:
-            model_best = YOLO("weights/best.pt")
-        return model_best
-    else:
-        if model_last is None:
-            model_last = YOLO("weights/last.pt")
-        return model_last
+# ✅ Load only best.pt model once
+print("Loading YOLO model... please wait ⏳")
+model = YOLO("weights/best.pt")
+print("✅ Model loaded successfully!")
 
 @app.route('/')
 def index():
@@ -36,14 +28,13 @@ def predict():
     if file.filename == '':
         return redirect(request.url)
 
-    model_choice = request.form.get('model_choice')
-    model = load_model(model_choice)
-
+    # Save uploaded file
     ext = os.path.splitext(file.filename)[1]
     filename = f"{uuid.uuid4()}{ext}"
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
 
+    # Run YOLO prediction
     results = model.predict(
         source=filepath,
         save=True,
@@ -52,6 +43,7 @@ def predict():
         exist_ok=True
     )
 
+    # Find saved result file
     result_dir = results[0].save_dir
     result_name = os.path.basename(filepath)
     result_path = os.path.join(result_dir, result_name)
@@ -61,14 +53,14 @@ def predict():
                 result_path = os.path.join(result_dir, f)
                 break
 
-    result_url = result_path.replace("\\", "/")
+    # Classes detected
     detected_classes = [model.names[int(c)] for c in results[0].boxes.cls] if results[0].boxes else []
+    result_url = result_path.replace("\\", "/")
 
     return render_template(
         'result.html',
         result_file=result_url,
-        detected_classes=list(set(detected_classes)),
-        model_used=model_choice
+        detected_classes=list(set(detected_classes))
     )
 
 @app.route('/download/<path:filename>')
