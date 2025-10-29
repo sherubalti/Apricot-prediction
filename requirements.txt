@@ -1,8 +1,9 @@
-flask
+Flask
 ultralytics
 opencv-python-headless==4.9.0.8
 torch>=2.0.0
 numpy
 gunicorn
+
 
 
